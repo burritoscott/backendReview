@@ -1,0 +1,46 @@
+make 4 routes in an express server.js file
+
+	1. gets all pets
+		
+		get 
+
+		/pets
+
+		returns json
+
+	2. gets one pet 
+
+		get
+
+		/pet/:id
+
+		returns json
+
+	3. inserts a pet
+
+		post
+
+		/pet
+
+		inserts req.body into collection
+
+	4. delete a pet
+
+		post
+
+		/pet/:id 
+
+1. npm init
+	to make a package.json file
+
+2. npm install express
+
+3. npm install mongojs
+
+4. make a server.js file and include express and mongojs
+
+5. make the routes
+
+
+
+
