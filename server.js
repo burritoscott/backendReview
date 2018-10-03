@@ -1,11 +1,17 @@
 // Dependencies
 var express = require("express");
 var mongojs = require("mongojs");
-var bodyParser = require('body-parser')
+var bodyParser = require("body-parser");
 
 // Initialize Express
 var app = express();
 
+// Initialize body-parser
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 // Set up a static folder (public) for our web app
 app.use(express.static("public"));
 
@@ -25,11 +31,8 @@ db.on("error", function(error) {
 // Routes
 // 1. At the root path, send a simple hello world message to the browser
 //this block of code isn't necessary if app.use(express.static("public")); is used
-app.get("/", function(req, res) {
-  res.send("Hello world");
-});
 
-// 2. At the "/all" path, display every entry in the animals collection
+// 1. At the "/all" path, display every entry in the animals collection
 app.get("/all", function(req, res) {
   // Query: In our database, go to the animals collection, then "find" everything
   db.pets.find({}, function(error, found) {
@@ -44,36 +47,65 @@ app.get("/all", function(req, res) {
   });
 });
 
-// 3. At the "/name" path, display every entry in the animals collection, sorted by name
-app.get("/name", function(req, res) {
-  // Query: In our database, go to the animals collection, then "find" everything,
-  // but this time, sort it by name (1 means ascending order)
-  db.pets.find().sort({ name: 1 }, function(error, found) {
-    // Log any errors if the server encounters one
-    if (error) {
-      console.log(error);
+// 2. At the "/pets:id" path, display every entry in the animals collection, sorted by pet
+app.get("/pets/:id", function(req, res) {
+  // Find just one result in the notes collection
+  db.pets.findOne(
+    {
+      // Using the id in the url
+      _id: mongojs.ObjectId(req.params.id)
+    },
+    function(error, found) {
+      // log any errors
+      if (error) {
+        console.log(error);
+        res.send(error);
+      } else {
+        // Otherwise, send the note to the browser
+        // This will fire off the success function of the ajax request
+        console.log(found);
+        res.send(found);
+      }
     }
-    // Otherwise, send the result of this query to the browser
-    else {
-      res.json(found);
-    }
-  });
+  );
 });
 
-// 4. At the "/weight" path, display every entry in the animals collection, sorted by weight
-app.get("/type", function(req, res) {
+// 3. At the "/weight" path, display every entry in the animals collection, sorted by weight
+app.get("/insert", function(req, res) {
   // Query: In our database, go to the animals collection, then "find" everything,
   // but this time, sort it by weight (-1 means descending order)
-  db.pets.find().sort({ type: -1 }, function(error, found) {
-    // Log any errors if the server encounters one
-    if (error) {
-      console.log(error);
+  db.pets.insert(req.body),
+    function(error, found) {
+      // Log any errors if the server encounters one
+      if (error) {
+        console.log(error);
+      }
+      // Otherwise, send the result of this query to the browser
+      else {
+        res.send(found);
+      }
+    };
+});
+
+// 4. Delete a pet
+app.get("/insert", function(req, res) {
+  // Query: In our database, go to the animals collection, then "find" everything,
+  // but this time, sort it by weight (-1 means descending order)
+  db.pets.deleteOne(
+    {
+      _id: ObjectId(req.params.id)
+    },
+    function(error, found) {
+      // Log any errors if the server encounters one
+      if (error) {
+        console.log(error);
+      }
+      // Otherwise, send the result of this query to the browser
+      else {
+        res.send(found);
+      }
     }
-    // Otherwise, send the result of this query to the browser
-    else {
-      res.json(found);
-    }
-  });
+  );
 });
 
 // Set the app to listen on port 3000
